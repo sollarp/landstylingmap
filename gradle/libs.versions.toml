@@ -12,9 +12,16 @@ composeBom = "2024.04.01"
 mapsCompose = "6.1.0"
 playServicesMaps = "19.0.0"
 playServicesMapsVersion = "19.0.0"
-secretsGradlePlugin = "2.0.1"
+ktor = "2.3.12"
+kotlinx-serialization-json = "1.6.0"
+
+
 
 [libraries]
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+ktorc-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktorn-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation",  version.ref = "ktor" }
+ktors-serialization-gson = { group = "io.ktor", name = "ktor-serialization-gson",  version.ref = "ktor" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

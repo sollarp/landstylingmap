@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.secrets.gradle.plugin)
+
 }
 
 android {
@@ -53,6 +54,11 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktorc.cio)
+    implementation(libs.ktorn.client.content.negotiation)
+    implementation(libs.ktors.serialization.gson)
     implementation(libs.play.services.maps)
     implementation(libs.maps.compose)
     implementation(libs.androidx.core.ktx)
