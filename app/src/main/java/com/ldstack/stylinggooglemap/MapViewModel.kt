@@ -1,31 +1,42 @@
 package com.ldstack.stylinggooglemap
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ldstack.stylinggooglemap.data.Repository
 import com.ldstack.stylinggooglemap.data.Site
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MapViewModel (
+@HiltViewModel
+class MapViewModel @Inject constructor (
     private val repository: Repository
 ) : ViewModel() {
 
-    val countries: StateFlow<List<Site>>
-        get() = repository.getCountries()
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(1000),
-                initialValue = emptyList()
-            )
+    private val _countries = MutableLiveData<List<Site>>()
+    val countries: LiveData<List<Site>> = _countries
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
 
-    fun fetchCountries() {
+    init {
+        println("MapViewModel initialized")
+        loadCountries()
+    }
+
+    fun loadCountries() {
         viewModelScope.launch {
-            countries.collect { sites ->
-                println("Countries: $sites") // Print the list of sites
-            }
+            repository.getCountries()
+                .catch { e ->
+                    // Handle error case
+                    _error.postValue(e.message)
+                }
+                .collect { siteList ->
+                    // Update LiveData with the result
+                    _countries.postValue(siteList)
+                }
         }
     }
 }
