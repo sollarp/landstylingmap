@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ldstack.stylinggooglemap.data.Repository
-import com.ldstack.stylinggooglemap.data.Site
+import com.ldstack.stylinggooglemap.data.dto.DataModel
+import com.ldstack.stylinggooglemap.data.dto.toDataModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,27 +16,20 @@ class MapViewModel @Inject constructor (
     private val repository: Repository
 ) : ViewModel() {
 
-    private val _countries = MutableLiveData<List<Site>>()
-    val countries: LiveData<List<Site>> = _countries
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> = _error
+    private val _polygonPoints = MutableLiveData<List<DataModel>>()
+    val polygonPoints: LiveData<List<DataModel>> = _polygonPoints
 
     init {
-        println("MapViewModel initialized")
-        loadCountries()
-    }
-
-    fun loadCountries() {
         viewModelScope.launch {
-            repository.getCountries()
-                .catch { e ->
-                    // Handle error case
-                    _error.postValue(e.message)
+            try {
+                val serverResponse = repository.getServerResponse()
+                serverResponse.collect { siteList ->
+                    val setModel = siteList.toDataModel()
+                    _polygonPoints.value = setModel
                 }
-                .collect { siteList ->
-                    // Update LiveData with the result
-                    _countries.postValue(siteList)
-                }
+            } catch (e: Exception) {
+                println("Error: ${e.message}")
+            }
         }
     }
 }

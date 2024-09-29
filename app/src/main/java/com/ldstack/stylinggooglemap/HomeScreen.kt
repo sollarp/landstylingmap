@@ -1,63 +1,84 @@
 package com.ldstack.stylinggooglemap
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.maps.android.compose.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
-import com.google.maps.android.compose.Marker
+import com.ldstack.stylinggooglemap.utilize.Converter
 
 
 @Composable
-fun HomeScreen(
-    //viewModel: MapViewModel = hiltViewModel()
-) {
-    //val mainViewModel: MapViewModel = hiltViewModel()
-    //mainViewModel.fetchCountries()
-    //val countries = viewModel.countries.collectAsState()
+fun HomeScreen() {
 
-    val singapore = LatLng(1.35, 103.87)
-    val singaporeMarkerState = rememberMarkerState(position = singapore)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 10f)
-    }
+    var selectedPolygonId by remember { mutableStateOf<Int?>(null) }
+    val mainViewModel: MapViewModel = hiltViewModel()
+    val dataModelList = mainViewModel.polygonPoints.observeAsState()
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.padding(bottom = 100.dp),onClick ={
-                    //countries.value.forEach { site -> println(site.name) }
-                }) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Add")
-            }
-        }
-    ) { paddingValues ->
-        GoogleMap(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues), // Apply padding to avoid overlap with FAB
-            cameraPositionState = cameraPositionState
-        ) {
-            Marker(
-                state = singaporeMarkerState,
-                title = "Singapore",
-                snippet = "Marker in Singapore"
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(
+                LatLng(
+                    51.343110998, -2.971985333
+                ), 13f
             )
+        }
+    ) {
+        dataModelList.value?.forEachIndexed { _, dataModel ->
+
+            val latLngPoints: List<LatLng> = Converter.convertToLatLng(dataModel.polygonPoints)
+
+            val fillColor =
+                Color(android.graphics.Color.parseColor(dataModel.siteCategory.color ?: "#00FF00"))
+            val strokeColor = Color(
+                android.graphics.Color.parseColor(
+                    dataModel.siteCategory.strokeColor ?: "#0000FF"
+                )
+            )
+            val strokeWidth = dataModel.siteCategory.strokeWeight.toFloat() ?: 5f
+
+            val isSelected = dataModel.id == selectedPolygonId
+
+            Polygon(
+                points = latLngPoints,
+                clickable = true,
+                fillColor = if (isSelected) Color.Red else fillColor,
+                strokeColor = strokeColor,
+                strokeWidth = strokeWidth,
+                tag = dataModel.name,
+                onClick = {
+                    selectedPolygonId = dataModel.id
+                }
+            )
+        }
+    }
+    Box(contentAlignment = Alignment.BottomCenter) {
+        Button(
+            onClick = {
+                // Reset the selected polygon
+                selectedPolygonId = null
+            },
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Text("Reset Selection")
         }
     }
 }
