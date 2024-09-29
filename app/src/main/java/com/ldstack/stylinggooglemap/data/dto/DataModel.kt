@@ -15,10 +15,3 @@ data class DataModel(
     val siteCategory: SiteCategory
 )
 
-@Serializable
-data class PolygonPoints(
-    @SerialName("latAndLng")
-    val points: List<Double>
-)
-
-

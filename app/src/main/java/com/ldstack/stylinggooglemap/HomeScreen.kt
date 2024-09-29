@@ -72,7 +72,6 @@ fun HomeScreen() {
     Box(contentAlignment = Alignment.BottomCenter) {
         Button(
             onClick = {
-                // Reset the selected polygon
                 selectedPolygonId = null
             },
             modifier = Modifier
