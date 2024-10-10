@@ -25,11 +25,11 @@ object GeometryConverter {
         val type = jsonObject["type"]?.jsonPrimitive?.content
 
         return when (type) {
-         /*   "Polygon" -> {
+            "Polygon" -> {
                 // Assuming PolygonType is your data class for Polygon type
                 val polygonData = Json.decodeFromString<PolygonType>(jsonString) // Handle Polygon case
                 polygonData.coordinates[0] // Return the first set of coordinates
-            }*/
+            }
             "MultiPolygon" -> {
                 val multiPolygonData = Json.decodeFromString<MultiPolygonType>(jsonString) // Handle MultiPolygon case
                 println("multiPolygonData: ${multiPolygonData.coordinates}")
