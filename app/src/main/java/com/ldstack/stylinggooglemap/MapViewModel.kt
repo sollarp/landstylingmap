@@ -25,6 +25,7 @@ class MapViewModel @Inject constructor (
                 val serverResponse = repository.getServerResponse()
                 serverResponse.collect { siteList ->
                     val setModel = siteList.toDataModel()
+                    println("siteList: $setModel")
                     _polygonPoints.value = setModel
                 }
             } catch (e: Exception) {

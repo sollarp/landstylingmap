@@ -12,6 +12,6 @@ data class DataModel(
     @SerialName("name")
     val name: String = "",
     @SerialName("siteCategory")
-    val siteCategory: SiteCategory
+    val siteCategory: SiteCategory2
 )
 
