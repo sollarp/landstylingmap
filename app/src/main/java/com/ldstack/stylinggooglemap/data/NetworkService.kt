@@ -50,8 +50,7 @@ object NetworkService {
 }
 
 val query =
-    "{\"query\":\"query{sitesByDistrict(district_id: 13, first: 39, page: 1, filter: " +
+    "{\"query\":\"query{sitesByDistrict(district_id: 13, first: 100, page: 1, filter: " +
             "{ site_categories: { map_type_category_id: [13, 16] } }){data{id geometry name " +
             "siteCategory{id color stroke_color stroke_opacity stroke_weight}} " +
             "paginatorInfo{currentPage hasMorePages total lastPage}}}\",\"variables\":{}}"
-

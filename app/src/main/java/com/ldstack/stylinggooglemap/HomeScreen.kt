@@ -43,37 +43,30 @@ fun HomeScreen() {
     ) {
         dataModelList.value?.forEachIndexed { _, dataModel ->
 
-            if (dataModel.polygonPoints.isNotEmpty()) {
+            val latLngPoints: List<LatLng> = Converter.convertToLatLng(dataModel.polygonPoints)
 
-                val latLngPoints: List<LatLng> = Converter.convertToLatLng(dataModel.polygonPoints)
-
-                val fillColor =
-                    Color(
-                        android.graphics.Color.parseColor(
-                            dataModel.siteCategory.color
-                        )
-                    )
-                val strokeColor = Color(
-                    android.graphics.Color.parseColor(
-                        dataModel.siteCategory.stroke_color
-                    )
+            val fillColor =
+                Color(android.graphics.Color.parseColor(dataModel.siteCategory.color ))
+            val strokeColor = Color(
+                android.graphics.Color.parseColor(
+                    dataModel.siteCategory.stroke_color
                 )
-                val strokeWidth = dataModel.siteCategory.stroke_weight.toFloat()
+            )
+            val strokeWidth = dataModel.siteCategory.stroke_weight.toFloat()
 
-                val isSelected = dataModel.id == selectedPolygonId
+            val isSelected = dataModel.id == selectedPolygonId
 
-                Polygon(
-                    points = latLngPoints,
-                    clickable = true,
-                    fillColor = if (isSelected) Color.Red else fillColor,
-                    strokeColor = strokeColor,
-                    strokeWidth = strokeWidth,
-                    tag = dataModel.name,
-                    onClick = {
-                        selectedPolygonId = dataModel.id
-                    }
-                )
-            }
+            Polygon(
+                points = latLngPoints,
+                clickable = true,
+                fillColor = if (isSelected) Color.Red else fillColor,
+                strokeColor = strokeColor,
+                strokeWidth = strokeWidth,
+                tag = dataModel.name,
+                onClick = {
+                    selectedPolygonId = dataModel.id
+                }
+            )
         }
     }
     Box(contentAlignment = Alignment.BottomCenter) {
