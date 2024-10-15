@@ -1,11 +1,13 @@
 package com.ldstack.stylinggooglemap
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -21,27 +23,31 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.ldstack.stylinggooglemap.data.dto.DataModel
 import com.ldstack.stylinggooglemap.utilize.Converter
 
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun HomeScreen() {
 
     var selectedPolygonId by remember { mutableStateOf<Int?>(null) }
     val mainViewModel: MapViewModel = hiltViewModel()
-    val dataModelList = mainViewModel.polygonPoints.observeAsState()
+    val dataModelList by mainViewModel.polygons.collectAsState()
+    val holdAllData = remember { mutableListOf<DataModel>() }
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(
                 LatLng(
-                    51.343110998, -2.971985333
-                ), 13f
+                    51.38903466190211, -2.7818785652738525
+                ), 11f
             )
         }
     ) {
-        dataModelList.value?.forEachIndexed { _, dataModel ->
+        holdAllData.addAll(dataModelList)
+        holdAllData.forEachIndexed { _, dataModel ->
 
             val latLngPoints: List<LatLng> = Converter.convertToLatLng(dataModel.polygonPoints)
 
@@ -55,7 +61,6 @@ fun HomeScreen() {
             val strokeWidth = dataModel.siteCategory.stroke_weight.toFloat()
 
             val isSelected = dataModel.id == selectedPolygonId
-
             Polygon(
                 points = latLngPoints,
                 clickable = true,

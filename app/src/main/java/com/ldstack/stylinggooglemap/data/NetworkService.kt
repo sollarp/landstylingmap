@@ -26,6 +26,7 @@ val ktorClient = HttpClient(CIO) {
 
 object NetworkService {
 
+
     private const val URL = "https://app.landstack.co.uk/graphql"
 
     suspend fun getCountries(): Data2 {
@@ -34,9 +35,6 @@ object NetworkService {
             setBody(query)
         }
         val responseBody = response.body<String>()
-
-        val gson = Gson()
-        //val root = gson.fromJson(responseBody, ResponseModule::class.java)
         val complexRoot = getQuery(responseBody)
         return complexRoot?.data!!
     }
@@ -44,13 +42,15 @@ object NetworkService {
     fun getQuery(responseBody: String): ResponseData? {
         val gson = Gson()
         val responseData = gson.fromJson(responseBody, ResponseData::class.java)
-        println("responseData: $responseData")
         return responseData
     }
 }
 
 val query =
-    "{\"query\":\"query{sitesByDistrict(district_id: 13, first: 100, page: 1, filter: " +
+    "{\"query\":\"query{sitesByDistrict(district_id: 13, first: 500, page: 2, filter: " +
             "{ site_categories: { map_type_category_id: [13, 16] } }){data{id geometry name " +
             "siteCategory{id color stroke_color stroke_opacity stroke_weight}} " +
             "paginatorInfo{currentPage hasMorePages total lastPage}}}\",\"variables\":{}}"
+
+val bearerToken = " "
+
